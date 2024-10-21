@@ -21,7 +21,7 @@ constellations = [constellation['name'] for constellation in constellations_data
 def get_next_image_number(existing_images):
     max_number = 0
     for image in existing_images:
-        match = re.search(r'image(\d+)', image)
+        match = re.match(r'image(\d+)', image)
         if match:
             number = int(match.group(1))
             if number > max_number:
@@ -35,38 +35,40 @@ def add_new_images(new_images):
     next_image_number = get_next_image_number(existing_images)
 
     for image_name in new_images:
-        new_image_name = f'image{next_image_number}.jpg'
-        print(f'Imagen original: {image_name}, nueva imagen: {new_image_name}')
-        
-        print('Selecciona una constelación:')
-        for idx, constellation in enumerate(constellations):
-            print(f'{idx + 1}. {constellation}')
-        
-        while True:
-            try:
-                choice = int(input('Introduce el número de la constelación: '))
-                if 1 <= choice <= len(constellations):
-                    label = constellations[choice - 1]
-                    break
-                else:
-                    print('Opción no válida. Intenta de nuevo.')
-            except ValueError:
-                print('Por favor, introduce un número válido.')
-        
-        df = df.append({"Image": new_image_name, "Constellation": label}, ignore_index=True)
-        
-        original_image_path = os.path.join(dir_dataset, image_name)
-        new_image_path = os.path.join(dir_dataset, new_image_name)
-        os.rename(original_image_path, new_image_path)
+        if not re.match(r'image\d+', image_name):
+            new_image_name = f'image{next_image_number}.jpg'
+            print(f'Original image name: {image_name}, new image name: {new_image_name}')
+            
+            print('Select a constellation:')
+            for idx, constellation in enumerate(constellations):
+                print(f'{idx + 1}. {constellation}')
+            
+            while True:
+                try:
+                    choice = int(input('Introduce constellation´s number: '))
+                    if 1 <= choice <= len(constellations):
+                        label = constellations[choice - 1]
+                        break
+                    else:
+                        print('Not a valid option.')
+                except ValueError:
+                    print('Insert a valid number.')
+            
+            new_row = pd.DataFrame({"Image": [new_image_name], "Constellation": [label]})
+            df = pd.concat([df, new_row], ignore_index=True)
+            
+            original_image_path = os.path.join(dir_dataset, image_name)
+            new_image_path = os.path.join(dir_dataset, new_image_name)
+            os.rename(original_image_path, new_image_path)
 
-        next_image_number += 1
+            next_image_number += 1
 
 new_images = [f for f in os.listdir(dir_dataset) if f.endswith(('.png', '.jpg', '.jpeg'))]
 
 if new_images:
     add_new_images(new_images)
 else:
-    print('No hay nuevas imágenes para agregar.')
+    print('There are not new images.')
 
 df.to_excel(excel_path, index=False)
-print('Archivo Excel actualizado.')
+print('Excel file updated.')
