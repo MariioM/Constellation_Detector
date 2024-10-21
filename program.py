@@ -28,21 +28,6 @@ def load_data(dataset_dir, file):
 
 images, labels = load_data(dir_dataset, file_data)
 
-print(f'Cantidad de imágenes cargadas: {len(images)}')
-print(f'Cantidad de etiquetas cargadas: {len(labels)}')
 
-num_images = min(25, len(images))
 
-fig, axes = plt.subplots(5, 5, figsize=(15, 15))
-axes = axes.flatten()
 
-for i in range(num_images):
-    axes[i].imshow(images[i])
-    axes[i].set_title(labels[i])
-    axes[i].axis('off')
-
-for j in range(num_images, 25):
-    axes[j].axis('off')
-
-plt.tight_layout()
-plt.show()
