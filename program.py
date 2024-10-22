@@ -24,6 +24,7 @@ def load_data(dataset_dir, file):
         label = row["Constellation"].strip()
         image_path = os.path.join(dataset_dir, 'train', image_name) 
         if os.path.exists(image_path):
+            print(image_path)
             image = cv2.imread(image_path)
             image = cv2.resize(image, (SIZE_IMG, SIZE_IMG))
             image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
